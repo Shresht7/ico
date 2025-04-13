@@ -1,6 +1,7 @@
 use image::codecs::ico::{IcoEncoder, IcoFrame};
 
 mod cli;
+mod svg;
 
 fn main() {
     let cli = cli::parse();
@@ -15,6 +16,7 @@ fn load_image<P: AsRef<std::path::Path>>(
 ) -> Result<image::DynamicImage, Box<dyn std::error::Error>> {
     match path.as_ref().extension().and_then(|e| e.to_str()) {
         Some("png") => Ok(image::open(path)?),
+        Some("svg") => Ok(svg::open(path)?),
         x => Err(format!("Unsupported image format: {}", x.unwrap_or_default()).into()),
     }
 }

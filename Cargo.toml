@@ -1,6 +1,9 @@
 [package]
 name = "sico"
 version = "0.1.0"
+authors = ["Shresht7"]
+description = "A simple command-line utility to generate ICO files"
+license = "MIT"
 edition = "2024"
 
 [dependencies]

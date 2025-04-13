@@ -20,13 +20,6 @@ fn load_image<P: AsRef<std::path::Path>>(
 }
 
 fn run(args: &cli::Args) -> std::io::Result<()> {
-    if !args.input.extension().is_some_and(|e| e == "png") {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::Unsupported,
-            "Unsupported extension",
-        ));
-    }
-
     let img = load_image(&args.input).expect("failed to load image");
 
     let img = img.resize(16, 16, image::imageops::FilterType::Lanczos3);

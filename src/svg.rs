@@ -1,9 +1,10 @@
+use image::codecs::ico::IcoFrame;
 use resvg::tiny_skia::{self, Pixmap};
 
-pub fn open<P: AsRef<std::path::Path>>(
-    path: P,
-) -> Result<image::DynamicImage, Box<dyn std::error::Error>> {
-    let file_contents = std::fs::read(path)?;
+use crate::cli;
+
+pub fn generate_frames(args: &cli::Args) -> Result<Vec<IcoFrame>, Box<dyn std::error::Error>> {
+    let file_contents = std::fs::read(&args.input)?;
 
     let tree = usvg::Tree::from_data(&file_contents, &usvg::Options::default())?;
 
@@ -25,5 +26,13 @@ pub fn open<P: AsRef<std::path::Path>>(
         .ok_or("failed to convert pixmap to image")
         .unwrap();
 
-    Ok(image::DynamicImage::ImageRgba8(img))
+    let frame = IcoFrame::as_png(
+        &img,
+        pixmap_size.width(),
+        pixmap_size.height(),
+        image::ExtendedColorType::Rgba8,
+    )
+    .expect("failed to make ico frame");
+
+    Ok(vec![frame])
 }

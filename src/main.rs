@@ -15,7 +15,7 @@ fn main() {
 fn run(args: &cli::Args) -> Result<(), Box<dyn std::error::Error>> {
     let frames = match args.input.extension().and_then(|e| e.to_str()) {
         Some("png") => png::generate_frames(args)?,
-        Some("svg") => todo!("svg"),
+        Some("svg") => svg::generate_frames(args)?,
         x => return Err(format!("Unsupported image format: {}", x.unwrap_or_default()).into()),
     };
 

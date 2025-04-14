@@ -75,7 +75,7 @@ impl From<&ico::IconDirEntry> for IcoFrame {
 }
 
 /// Extracts information about the ICO file
-pub fn info<P: AsRef<std::path::Path>>(path: P) -> anyhow::Result<()> {
+pub fn info<P: AsRef<std::path::Path>>(path: P) -> anyhow::Result<Ico> {
     let file = std::io::BufReader::new(std::fs::File::open(&path)?);
     let ico = ico::IconDir::read(file)?;
 
@@ -88,28 +88,7 @@ pub fn info<P: AsRef<std::path::Path>>(path: P) -> anyhow::Result<()> {
         entries: ico.entries().iter().map(IcoFrame::from).collect(),
     };
 
-    println!("{}", ico);
-
-    Ok(())
-}
-
-/// Extracts information about the ICO file in JSON format
-pub fn info_json<P: AsRef<std::path::Path>>(path: P) -> anyhow::Result<()> {
-    let file = std::io::BufReader::new(std::fs::File::open(&path)?);
-    let ico = ico::IconDir::read(file)?;
-
-    let ico = Ico {
-        path: path.as_ref().to_path_buf(),
-        resource_type: match ico.resource_type() {
-            ico::ResourceType::Icon => "icon".into(),
-            ico::ResourceType::Cursor => "cursor".into(),
-        },
-        entries: ico.entries().iter().map(IcoFrame::from).collect(),
-    };
-
-    println!("{}", serde_json::to_string_pretty(&ico)?);
-
-    Ok(())
+    Ok(ico)
 }
 
 /// Extracts the frames from the ICO file and as PNG files

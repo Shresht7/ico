@@ -11,7 +11,7 @@ pub fn generate_frames(args: &cli::Args) -> anyhow::Result<Vec<IcoFrame>> {
         .sizes
         .iter()
         .map(|size| -> Result<IcoFrame<'_>, anyhow::Error> {
-            let img = img.resize(*size, *size, image::imageops::FilterType::Lanczos3);
+            let img = img.resize_exact(*size, *size, image::imageops::FilterType::Lanczos3);
             let rgba = img.to_rgba8();
             Ok(
                 IcoFrame::as_png(&rgba, *size, *size, image::ExtendedColorType::Rgba8)

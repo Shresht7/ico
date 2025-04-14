@@ -37,9 +37,12 @@ fn run(args: &cli::Args) -> anyhow::Result<()> {
                 .expect("failed to encode to ico");
         }
 
-        cli::Command::Info { input } => {
-            let info = ico::info(input)?;
-            println!("{}", info);
+        cli::Command::Info { input, json } => {
+            if !json {
+                ico::info(input)?;
+            } else {
+                ico::info_json(input)?;
+            }
         }
 
         cli::Command::Extract { input, output } => {

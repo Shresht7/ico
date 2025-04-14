@@ -30,6 +30,10 @@ pub enum Command {
     Info {
         /// Input ICO file
         input: PathBuf,
+
+        /// Output in JSON format
+        #[arg(short, long)]
+        json: bool,
     },
 
     /// Extract images from an ICO file

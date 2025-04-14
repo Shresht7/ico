@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -106,6 +108,28 @@ pub fn info_json<P: AsRef<std::path::Path>>(path: P) -> anyhow::Result<()> {
     };
 
     println!("{}", serde_json::to_string_pretty(&ico)?);
+
+    Ok(())
+}
+
+/// Extracts the frames from the ICO file and saves them as PNG files
+pub fn extract<P: AsRef<std::path::Path>>(input: P, output: P) -> anyhow::Result<()> {
+    let file = std::io::BufReader::new(std::fs::File::open(&input)?);
+    let ico = ico::IconDir::read(file)?;
+
+    let output = output.as_ref();
+    if !output.exists() {
+        std::fs::create_dir_all(output)?;
+    } else if !output.is_dir() {
+        return Err(anyhow::anyhow!("Output path is not a directory"));
+    }
+
+    for entry in ico.entries() {
+        let size = format!("{}x{}", entry.width(), entry.height());
+        let output_path = output.join(format!("frame_{size}.png"));
+        let mut file = std::fs::File::create(output_path)?;
+        file.write_all(entry.data())?;
+    }
 
     Ok(())
 }

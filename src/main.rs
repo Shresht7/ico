@@ -46,7 +46,8 @@ fn run(args: &cli::Args) -> anyhow::Result<()> {
         }
 
         cli::Command::Extract { input, output } => {
-            todo!("Implement extraction of images from ICO file");
+            ico::extract(input, output)?;
+            println!("Extracted frames to {}", output.display());
         }
     }
 

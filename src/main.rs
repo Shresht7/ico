@@ -1,6 +1,8 @@
-use image::codecs::ico::{IcoEncoder, IcoFrame};
+use image::codecs::ico::IcoEncoder;
 
 mod cli;
+mod png;
+mod svg;
 
 fn main() {
     let cli = cli::parse();
@@ -10,25 +12,22 @@ fn main() {
     }
 }
 
-fn run(args: &cli::Args) -> std::io::Result<()> {
-    if !args.input.extension().is_some_and(|e| e == "png") {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::Unsupported,
-            "Unsupported extension",
-        ));
-    }
+fn run(args: &cli::Args) -> anyhow::Result<()> {
+    let frames = match args.input.extension().and_then(|e| e.to_str()) {
+        Some("png") => png::generate_frames(args)?,
+        Some("svg") => svg::generate_frames(args)?,
+        x => {
+            return Err(anyhow::anyhow!(
+                "Unsupported image format: {}",
+                x.unwrap_or_default()
+            ));
+        }
+    };
 
-    let img = image::open(&args.input).expect("failed to open image");
-
-    let img = img.resize(16, 16, image::imageops::FilterType::Lanczos3);
-    let rgba = img.to_rgba8();
-
-    let frame = IcoFrame::as_png(&rgba, 16, 16, image::ExtendedColorType::Rgba8)
-        .expect("failed to make ico frame");
-
-    let file = std::fs::File::create(&args.output).expect("failed to create output file");
+    let file = std::fs::File::create(&args.output)
+        .map_err(|e| anyhow::anyhow!("failed to create output file: {}", e))?;
     IcoEncoder::new(file)
-        .encode_images(&[frame])
+        .encode_images(&frames)
         .expect("failed to encode to ico");
 
     Ok(())

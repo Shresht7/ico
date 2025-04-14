@@ -38,8 +38,7 @@ fn run(args: &cli::Args) -> anyhow::Result<()> {
         }
 
         cli::Command::Info { input } => {
-            let info = ico::info(input)?;
-            println!("{}", info);
+            ico::info(input)?;
         }
 
         cli::Command::Extract { input, output } => {

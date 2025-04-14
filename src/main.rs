@@ -39,10 +39,7 @@ fn run(args: &cli::Args) -> anyhow::Result<()> {
 
         cli::Command::Info { input } => {
             let info = ico::info(input)?;
-            println!(
-                "ICO dimensions: {}x{}",
-                info.dimensions.0, info.dimensions.1
-            );
+            println!("{}", info);
         }
 
         cli::Command::Extract { input, output } => {

@@ -42,7 +42,7 @@ pub enum Command {
         input: PathBuf,
 
         /// Output directory for extracted images
-        #[arg(short, long, default_value = "output")]
+        #[arg(short, long, default_value = "ico")]
         output: PathBuf,
     },
 }

@@ -2,7 +2,7 @@
 
 A simple command-line utility to generate Windows ICO files
 
-## ⭐ Features
+## Features
 
 - Generate ICO files from PNG or SVG images
 - Create icons with multiple sizes in a single ICO file
@@ -10,7 +10,7 @@ A simple command-line utility to generate Windows ICO files
 - View detailed information about ICO files
 - Support for both icon and cursor resources
 
-## 📘 Usage
+## Usage
 
 ### Generate ICO file
 
@@ -50,6 +50,6 @@ A simple command-line utility to generate Windows ICO files
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](./LICENSE)

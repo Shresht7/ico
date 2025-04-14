@@ -13,6 +13,7 @@ pub struct Args {
 #[derive(Subcommand)]
 pub enum Command {
     /// Create a new ICO file from PNG or SVG
+    #[command(aliases = ["gen", "create", "encode", "new", "pack", "make"])]
     Generate {
         /// Input image file (SVG or PNG)
         input: PathBuf,
@@ -27,6 +28,7 @@ pub enum Command {
     },
 
     /// Show information about an ICO file
+    #[command(visible_aliases = ["show", "inspect", "describe", "details"])]
     Info {
         /// Input ICO file
         input: PathBuf,
@@ -37,6 +39,7 @@ pub enum Command {
     },
 
     /// Extract images from an ICO file
+    #[command(visible_aliases = ["unpack", "decode", "dump"])]
     Extract {
         /// Input ICO file
         input: PathBuf,

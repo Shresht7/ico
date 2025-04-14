@@ -14,6 +14,8 @@ A simple command-line utility to generate Windows ICO files
 
 ### Generate ICO file
 
+cmd: `generate`, `gen`, `create`, `encode`, `new`, `pack`
+
 - Generate ICO with default sizes (16,32,48,64,256)
 
     ```bash
@@ -28,6 +30,8 @@ A simple command-line utility to generate Windows ICO files
 
 ### View ICO information
 
+cmd: `info`, `show`, `inspect`, `describe`, `details`
+
 - View ICO info in human-readable format
 
     ```bash
@@ -41,6 +45,8 @@ A simple command-line utility to generate Windows ICO files
     ```
 
 ### Extract ICO frames
+
+cmd: `extract`, `unpack`, `decode`, `dump`
 
 - Extract all frames as PNG files
 

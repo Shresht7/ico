@@ -24,15 +24,31 @@ pub struct IcoFrame {
     width: u32,
     height: u32,
     format: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    color_depth: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    cursor_hotspot: Option<(u16, u16)>,
 }
 
 impl std::fmt::Display for IcoFrame {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{{ width: {}, height: {}, format: {} }}",
-            self.width, self.height, self.format
-        )
+        let mut str = String::new();
+        str.push_str(&format!("width: {}  ", self.width));
+        str.push_str(&format!("height: {}  ", self.height));
+        str.push_str(&format!("format: {}  ", self.format));
+
+        if let Some(color_depth) = self.color_depth {
+            str.push_str(&format!("bits-per-pixel: {}  ", color_depth));
+        }
+
+        if let Some(cursor_hotspot) = self.cursor_hotspot {
+            str.push_str(&format!(
+                "cursor-hotspot: ({}, {})",
+                cursor_hotspot.0, cursor_hotspot.1
+            ));
+        }
+
+        write!(f, "{}", str)
     }
 }
 
@@ -46,6 +62,12 @@ impl From<&ico::IconDirEntry> for IcoFrame {
             } else {
                 "bmp".into()
             },
+            color_depth: if entry.bits_per_pixel() == 0 {
+                None
+            } else {
+                Some(entry.bits_per_pixel())
+            },
+            cursor_hotspot: entry.cursor_hotspot(),
         }
     }
 }

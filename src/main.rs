@@ -1,6 +1,7 @@
 use image::codecs::ico::IcoEncoder;
 
 mod cli;
+mod ico;
 mod png;
 mod svg;
 
@@ -13,22 +14,41 @@ fn main() {
 }
 
 fn run(args: &cli::Args) -> anyhow::Result<()> {
-    let frames = match args.input.extension().and_then(|e| e.to_str()) {
-        Some("png") => png::generate_frames(args)?,
-        Some("svg") => svg::generate_frames(args)?,
-        x => {
-            return Err(anyhow::anyhow!(
-                "Unsupported image format: {}",
-                x.unwrap_or_default()
-            ));
-        }
-    };
+    match &args.command {
+        cli::Command::Generate {
+            input,
+            output,
+            sizes,
+        } => {
+            let frames = match input.extension().and_then(|e| e.to_str()) {
+                Some("png") => png::generate_frames(input, sizes)?,
+                Some("svg") => svg::generate_frames(input, sizes)?,
+                x => {
+                    return Err(anyhow::anyhow!(
+                        "Unsupported image format: {}",
+                        x.unwrap_or_default()
+                    ));
+                }
+            };
 
-    let file = std::fs::File::create(&args.output)
-        .map_err(|e| anyhow::anyhow!("failed to create output file: {}", e))?;
-    IcoEncoder::new(file)
-        .encode_images(&frames)
-        .expect("failed to encode to ico");
+            let file = std::fs::File::create(output)?;
+            IcoEncoder::new(file)
+                .encode_images(&frames)
+                .expect("failed to encode to ico");
+        }
+
+        cli::Command::Info { input } => {
+            let info = ico::info(input)?;
+            println!(
+                "ICO dimensions: {}x{}",
+                info.dimensions.0, info.dimensions.1
+            );
+        }
+
+        cli::Command::Extract { input, output } => {
+            todo!("Implement extraction of images from ICO file");
+        }
+    }
 
     Ok(())
 }

@@ -8,8 +8,16 @@ use crate::cli;
 pub fn generate_frames(args: &cli::Args) -> anyhow::Result<Vec<IcoFrame>> {
     let file_contents = std::fs::read(&args.input)?;
     let tree = usvg::Tree::from_data(&file_contents, &usvg::Options::default())?;
-    let frame = generate_frame(&tree, 256)?;
-    Ok(vec![frame])
+    let frames = args
+        .sizes
+        .iter()
+        .map(|size| -> Result<IcoFrame<'_>, anyhow::Error> {
+            let size = *size as usize;
+            generate_frame(&tree, size)
+                .context(format!("failed to generate frame for size {}", size))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(frames)
 }
 
 /// Rasterizes the given [SVG tree][usvg::Tree] into an [`IcoFrame`] of given `size`

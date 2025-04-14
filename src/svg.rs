@@ -1,15 +1,13 @@
 use anyhow::Context;
 use image::codecs::ico::IcoFrame;
 use resvg::tiny_skia::{self, Pixmap};
-
-use crate::cli;
+use std::path::Path;
 
 /// Generates [`IcoFrame`]s from an SVG file
-pub fn generate_frames(args: &cli::Args) -> anyhow::Result<Vec<IcoFrame>> {
-    let file_contents = std::fs::read(&args.input)?;
+pub fn generate_frames<P: AsRef<Path>>(input: P, sizes: &[u32]) -> anyhow::Result<Vec<IcoFrame>> {
+    let file_contents = std::fs::read(input)?;
     let tree = usvg::Tree::from_data(&file_contents, &usvg::Options::default())?;
-    let frames = args
-        .sizes
+    let frames = sizes
         .iter()
         .map(|size| -> Result<IcoFrame<'_>, anyhow::Error> {
             let size = *size as usize;

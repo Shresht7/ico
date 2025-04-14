@@ -38,15 +38,18 @@ fn run(args: &cli::Args) -> anyhow::Result<()> {
         }
 
         cli::Command::Info { input, json } => {
-            if !json {
-                ico::info(input)?;
+            let ico = ico::info(input)?;
+            if *json {
+                let json = serde_json::to_string_pretty(&ico)?;
+                println!("{}", json);
             } else {
-                ico::info_json(input)?;
+                println!("{ico}");
             }
         }
 
         cli::Command::Extract { input, output } => {
-            todo!("Implement extraction of images from ICO file");
+            ico::extract(input, output)?;
+            println!("Extracted frames to {}", output.display());
         }
     }
 

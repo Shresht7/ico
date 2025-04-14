@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -73,7 +75,7 @@ impl From<&ico::IconDirEntry> for IcoFrame {
 }
 
 /// Extracts information about the ICO file
-pub fn info<P: AsRef<std::path::Path>>(path: P) -> anyhow::Result<()> {
+pub fn info<P: AsRef<std::path::Path>>(path: P) -> anyhow::Result<Ico> {
     let file = std::io::BufReader::new(std::fs::File::open(&path)?);
     let ico = ico::IconDir::read(file)?;
 
@@ -86,26 +88,27 @@ pub fn info<P: AsRef<std::path::Path>>(path: P) -> anyhow::Result<()> {
         entries: ico.entries().iter().map(IcoFrame::from).collect(),
     };
 
-    println!("{}", ico);
-
-    Ok(())
+    Ok(ico)
 }
 
-/// Extracts information about the ICO file in JSON format
-pub fn info_json<P: AsRef<std::path::Path>>(path: P) -> anyhow::Result<()> {
-    let file = std::io::BufReader::new(std::fs::File::open(&path)?);
+/// Extracts the frames from the ICO file and as PNG files
+pub fn extract<P: AsRef<std::path::Path>>(input: P, output: P) -> anyhow::Result<()> {
+    let file = std::io::BufReader::new(std::fs::File::open(&input)?);
     let ico = ico::IconDir::read(file)?;
 
-    let ico = Ico {
-        path: path.as_ref().to_path_buf(),
-        resource_type: match ico.resource_type() {
-            ico::ResourceType::Icon => "icon".into(),
-            ico::ResourceType::Cursor => "cursor".into(),
-        },
-        entries: ico.entries().iter().map(IcoFrame::from).collect(),
-    };
+    let output = output.as_ref();
+    if !output.exists() {
+        std::fs::create_dir_all(output)?;
+    } else if !output.is_dir() {
+        return Err(anyhow::anyhow!("Output path is not a directory"));
+    }
 
-    println!("{}", serde_json::to_string_pretty(&ico)?);
+    for entry in ico.entries() {
+        let dimensions = format!("{}x{}", entry.width(), entry.height());
+        let output_path = output.join(format!("frame_{dimensions}.png"));
+        let mut file = std::fs::File::create(output_path)?;
+        file.write_all(entry.data())?;
+    }
 
     Ok(())
 }

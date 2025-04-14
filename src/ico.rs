@@ -112,7 +112,7 @@ pub fn info_json<P: AsRef<std::path::Path>>(path: P) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Extracts the frames from the ICO file and saves them as PNG files
+/// Extracts the frames from the ICO file and as PNG files
 pub fn extract<P: AsRef<std::path::Path>>(input: P, output: P) -> anyhow::Result<()> {
     let file = std::io::BufReader::new(std::fs::File::open(&input)?);
     let ico = ico::IconDir::read(file)?;
@@ -125,8 +125,8 @@ pub fn extract<P: AsRef<std::path::Path>>(input: P, output: P) -> anyhow::Result
     }
 
     for entry in ico.entries() {
-        let size = format!("{}x{}", entry.width(), entry.height());
-        let output_path = output.join(format!("frame_{size}.png"));
+        let dimensions = format!("{}x{}", entry.width(), entry.height());
+        let output_path = output.join(format!("frame_{dimensions}.png"));
         let mut file = std::fs::File::create(output_path)?;
         file.write_all(entry.data())?;
     }
